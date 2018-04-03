@@ -34,7 +34,7 @@
         acentuacion();
         hiato();
         diptongoTriptongo();
-        return silaba;
+        return Object.assign({}, silaba);
     }
 
 
@@ -512,8 +512,6 @@
         }
 
         for (var i = 0; i < silaba.palabra.length; i++) {
-
-            hiato = {};
 
             // Hiato Acentual
             if ('íìúù'.indexOf(silaba.palabra[i]) > -1) {
