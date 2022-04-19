@@ -10,17 +10,17 @@
     var silaba = {
         palabra: undefined,         // (String) Palabra ingresada
         longitudPalabra: undefined, // (int)    Longitud de la palabra
-        numeroSilaba: undefined,    // (int)    Número de silabas de la palabra
-        silabas: undefined,         // (Array)  Array de objeto que contiene la silaba (caracter) y la posicion en la palabra
-        tonica: undefined,          // (int)    Posición de la silaba tónica (empieza en 1)
+        numeroSilaba: undefined,    // (int)    Número de sílabas de la palabra
+        silabas: undefined,         // (Array)  Array de objeto que contiene la sílaba (caracter) y la posicion en la palabra
+        tonica: undefined,          // (int)    Posición de la sílaba tónica (empieza en 1)
         letraTildada: undefined,    // (int)    Posición de la letra tildada (si la hay)
-        acentuacion: undefined,     // (int)    Tipo acentuacion de la palabra (Aguda, Grave, Esdrujula y Sobresdrujula)
+        acentuacion: undefined,     // (int)    Tipo acentuación de la palabra (Aguda, Grave, Esdrújula y Sobresdrújula)
         hiato: undefined,           // (Array)  Array de objeto que contiene hiato (si la hay)
         diptongo: undefined,        // (Array)  Array de objeto que contiene diptongo (si la hay)
         triptongo: undefined        // (Array)  Array de objeto que contiene triptongo (si la hay)
     };
 
-    var encontroTonica = undefined; // (bool)   Indica si se ha encontrado la silaba tónica
+    var encontroTonica = undefined; // (bool)   Indica si se ha encontrado la sílaba tónica
 
 
     /**
@@ -40,12 +40,12 @@
 
     /*********************************************************/
     /*********************************************************/
-    //                  METODOS INTERNOS                     //
+    //                  MÉTODOS INTERNOS                     //
     /*********************************************************/
     /*********************************************************/
 
     /**
-     * Realiza calculo de las sílabas
+     * Realiza cálculo de las sílabas
      *
      * @param {string} palabra
      * @returns {undefined}
@@ -61,7 +61,7 @@
         silaba.numeroSilaba = 0;
         silaba.letraTildada = -1;
 
-        // Variable que almacena silaba y la pocision de la silaba
+        // Variable que almacena sílaba y la posición de la sílaba
         var silabaAux;
 
         // Se recorre la palabra buscando las sílabas
@@ -76,14 +76,14 @@
             actPos = nucleo(silaba.palabra, actPos);
             actPos = coda(silaba.palabra, actPos);
 
-            // Obtiene y silaba de la palabra
+            // Obtiene y sílaba de la palabra
             silabaAux.silaba = silaba.palabra.substring(silabaAux.inicioPosicion, actPos);
 
-            // Guarda silaba de la palabra
+            // Guarda sílaba de la palabra
             silaba.silabas.push(silabaAux);
 
             if ((encontroTonica) && (silaba.tonica == 0))
-                silaba.tonica = silaba.numeroSilaba; // Marca la silaba tónica
+                silaba.tonica = silaba.numeroSilaba; // Marca la sílaba tónica
 
         }
 
@@ -153,7 +153,7 @@
     }
 
     /**
-     * Determina el núcleo de la silaba de pal cuyo ataque termina en pos - 1
+     * Determina el núcleo de la sílaba de pal cuyo ataque termina en pos - 1
      * y avanza pos hasta la posición siguiente al final de dicho núcleo
      *
      * @param {string} pal
@@ -268,7 +268,7 @@
                     if (anterior != 0) {
                         encontroTonica = true;
                     }
-                    if (anterior == 0) {    // Dos vocales fuertes no forman silaba
+                    if (anterior == 0) {    // Dos vocales fuertes no forman sílaba
                         if (hache)
                             pos--;
                         return pos;
@@ -286,7 +286,7 @@
                 case 'o':
                 case 'O':
 
-                    if (anterior == 0) {    // Dos vocales fuertes no forman silaba
+                    if (anterior == 0) {    // Dos vocales fuertes no forman sílaba
                         if (hache)
                             pos--;
                         return pos;
@@ -358,7 +358,7 @@
     }
 
     /**
-     * Determina la coda de la silaba de pal cuyo núcleo termina en pos - 1
+     * Determina la coda de la sílaba de pal cuyo núcleo termina en pos - 1
      * y avanza pos hasta la posición siguiente al final de dicha coda
      *
      * @param {string} pal
@@ -375,18 +375,18 @@
                 return pos;
             }
 
-            // Si sólo hay una consonante entre vocales, pertenece a la siguiente silaba
+            // Si sólo hay una consonante entre vocales, pertenece a la siguiente sílaba
             if (!esConsonante(pal [pos + 1])) return pos;
 
             var c1 = pal[pos];
             var c2 = pal[pos + 1];
 
-            // ¿Existe posibilidad de una tercera consonante consecutina?
+            // ¿Existe posibilidad de una tercera consonante consecutiva?
             if ((pos < silaba.longitudPalabra - 2)) {
                 var c3 = pal [pos + 2];
 
                 if (!esConsonante(c3)) { // No hay tercera consonante
-                    // Los grupos ll, lh, ph, ch y rr comienzan silaba
+                    // Los grupos ll, lh, ph, ch y rr comienzan sílaba
 
                     if ((c1 == 'l') && (c2 == 'l'))
                         return pos;
@@ -401,7 +401,7 @@
                         return pos;
 
                     // Si la y está precedida por s, l, r, n o c (consonantes alveolares),
-                    // una nueva silaba empieza en la consonante previa, si no, empieza en la y
+                    // una nueva sílaba empieza en la consonante previa, si no, empieza en la y
                     if ((c2 == 'y')) {
                         if ((c1 == 's') || (c1 == 'l') || (c1 == 'r') || (c1 == 'n') || (c1 == 'c'))
                             return pos;
@@ -456,7 +456,7 @@
                         return pos;
                     }
 
-                    // Los grupos pt, ct, cn, ps, mn, gn, ft, pn, cz, tz, ts comienzan silaba (Bezos)
+                    // Los grupos pt, ct, cn, ps, mn, gn, ft, pn, cz, tz, ts comienzan sílaba (Bezos)
 
                     if ((c2 == 'p') && (c3 == 't') ||
                         (c2 == 'c') && (c3 == 't') ||
@@ -500,7 +500,7 @@
      */
     function hiato() {
 
-        var vocalFuerteAnterior = false; // Almacena el tipo de vocal (Fuerte o Debil)
+        var vocalFuerteAnterior = false; // Almacena el tipo de vocal (Fuerte o Débil)
         silaba.hiato = [];
 
         // La 'u' de "qu" no forma hiato
@@ -568,7 +568,7 @@
         silaba.diptongo = [];
         silaba.triptongo = [];
 
-        // Vocal Debil = VD
+        // Vocal Débil = VD
         // Vocal Fuerte = VF
 
         var expresion;
@@ -595,21 +595,21 @@
                 continue;
             }
 
-            // Diptongo Drececiente (VF - VD) : ((a|e|o)(i|u))
+            // Diptongo Decreciente (VF - VD) : ((a|e|o)(i|u))
             expresion = /((a|e|o)(i|u))/g;
             if (silaba.silabas[i].silaba.match(expresion)) {
                 silaba.diptongo.push({
-                    tipo: 'Diptongo Drececiente',
+                    tipo: 'Diptongo Decreciente',
                     silaba: silaba.silabas[i].silaba.match(expresion)[0]
                 });
                 continue;
             }
 
-            // Diptongo Homogeneo (VD - VD) : ((i|u)(i|u))
+            // Diptongo Homogéneo (VD - VD) : ((i|u)(i|u))
             expresion = /((i|u)(i|u))/g;
             if (silaba.silabas[i].silaba.match(expresion)) {
                 silaba.diptongo.push({
-                    tipo: 'Diptongo Homogéneos',
+                    tipo: 'Diptongo Homogéneo',
                     silaba: silaba.silabas[i].silaba.match(expresion)[0]
                 });
             }
