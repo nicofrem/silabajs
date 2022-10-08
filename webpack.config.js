@@ -1,21 +1,12 @@
-const path = require('path');
-
-const serverConfig = {
-  target: 'node',
+module.exports = {
+  entry: './src/index.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'main.node.js',
-    libraryTarget: 'umd',
-  },
-};
-
-const clientConfig = {
-  target: 'web',
-  output: {
-    path: path.resolve(__dirname, 'dist'),
     filename: 'main.js',
-    libraryTarget: 'umd',
+    library: {
+      type: 'umd',
+      name: 'main',
+    },
+    // INFO: prevent error: `Uncaught ReferenceError: self is not define`
+    globalObject: 'this',
   },
 };
-
-module.exports = [serverConfig, clientConfig];

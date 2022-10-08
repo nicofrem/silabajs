@@ -2,7 +2,7 @@
   "name": "silabajs",
   "version": "1.0.0",
   "description": "_____________ Librería en Javascript para obtener en formato JSON las silabas, posición de la silaba tónica, tipo acentuación, hiato, diptongo y triptongo de una palabra.",
-  "main": "dist/silabajs.js",
+  "main": "dist/main.js",
   "scripts": {
     "lint": "npx eslint src --fix",
     "build": "npx webpack --mode production --target node"
