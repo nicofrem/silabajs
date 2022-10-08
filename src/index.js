@@ -632,10 +632,10 @@ function esConsonante(c) {
  * @param {string} palabra
  * @returns {Object}
  */
-export default function getSilabas(palabra) {
+module.exports = function getSilabas(palabra) {
   posicionSilabas(palabra);
   acentuacion();
   hiato();
   diptongoTriptongo();
   return { ...silaba };
-}
+};
