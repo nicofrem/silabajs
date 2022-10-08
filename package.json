@@ -1,0 +1,29 @@
+{
+  "name": "silabajs",
+  "version": "1.0.0",
+  "description": "_____________ Librería en Javascript para obtener en formato JSON las silabas, posición de la silaba tónica, tipo acentuación, hiato, diptongo y triptongo de una palabra.",
+  "scripts": {
+    "lint": "npx eslint src --fix",
+    "build": "npx webpack --mode production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enrichreader/silabajs.git"
+  },
+  "author": "nicofrem",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/enrichreader/silabajs/issues"
+  },
+  "homepage": "https://github.com/enrichreader/silabajs#readme",
+  "devDependencies": {
+    "eslint": "^8.25.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-react": "^7.31.8",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  }
+}
