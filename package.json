@@ -4,6 +4,10 @@
   "description": "Spanish syllable splitter — get syllables, accentuation, hiatus, diphthongs and triphthongs from any Spanish word",
   "author": "Nicolás Cofré Méndez",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nicofrem/silabajs"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
