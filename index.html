@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SilabaJS</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: .25rem;
+      background: linear-gradient(135deg, #6ee7b7, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle { color: #888; margin-bottom: 2rem; font-size: .9rem; }
+
+    .input-row {
+      display: flex;
+      gap: .5rem;
+      width: 100%;
+      max-width: 480px;
+      margin-bottom: 2rem;
+    }
+
+    input {
+      flex: 1;
+      padding: .75rem 1rem;
+      border-radius: .5rem;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 1.1rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus { border-color: #3b82f6; }
+
+    button {
+      padding: .75rem 1.5rem;
+      border-radius: .5rem;
+      border: none;
+      background: #3b82f6;
+      color: #fff;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    button:hover { background: #2563eb; }
+
+    #results {
+      width: 100%;
+      max-width: 640px;
+    }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: .75rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .word-header {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: baseline;
+      gap: .75rem;
+    }
+    .word-header .accent-tag {
+      font-size: .75rem;
+      font-weight: 500;
+      padding: .2rem .6rem;
+      border-radius: 999px;
+      background: #1e3a5f;
+      color: #93c5fd;
+    }
+
+    .syllables {
+      display: flex;
+      gap: .35rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .syl {
+      padding: .4rem .75rem;
+      border-radius: .4rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+      background: #2a2a2a;
+      border: 1px solid #333;
+      transition: transform .15s;
+    }
+    .syl:hover { transform: translateY(-2px); }
+    .syl.tonic {
+      background: #1e3a5f;
+      border-color: #3b82f6;
+      color: #93c5fd;
+    }
+
+    .separator { content: '-'; color: #555; font-size: 1.2rem; align-self: center; }
+
+    .meta { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem .75rem; font-size: .85rem; }
+    .meta dt { color: #888; }
+    .meta dd { color: #ccc; font-weight: 500; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .75rem; }
+    .tag {
+      font-size: .75rem;
+      padding: .2rem .55rem;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+    .tag.hiatus   { background: #3b1f2b; color: #f9a8d4; }
+    .tag.diphthong { background: #1a2e1a; color: #86efac; }
+    .tag.triphthong { background: #2e2a1a; color: #fde68a; }
+
+    .empty { color: #555; text-align: center; padding: 2rem; font-style: italic; }
+  </style>
+</head>
+<body>
+
+  <h1>SilabaJS</h1>
+  <p class="subtitle">Análisis silábico del español</p>
+
+  <div class="input-row">
+    <input id="word" type="text" placeholder="Escribe una palabra..." autofocus />
+    <button id="btn">Analizar</button>
+  </div>
+
+  <div id="results"></div>
+
+  <script type="module">
+    import { getSyllables } from './dist/index.js';
+
+    const ACCENT_LABELS = {
+      oxytone: 'Aguda',
+      paroxytone: 'Grave',
+      proparoxytone: 'Esdrújula',
+      superproparoxytone: 'Sobresdrújula',
+    };
+
+    const DIPHTHONG_LABELS = {
+      rising: 'Creciente',
+      falling: 'Decreciente',
+      homogeneous: 'Homogéneo',
+    };
+
+    const input = document.getElementById('word');
+    const btn = document.getElementById('btn');
+    const resultsEl = document.getElementById('results');
+
+    const analyze = () => {
+      const raw = input.value.trim();
+      if (!raw) return;
+
+      // Allow multiple words separated by spaces or commas
+      const words = raw.split(/[\s,]+/).filter(Boolean);
+
+      resultsEl.innerHTML = '';
+
+      for (const w of words) {
+        try {
+          const r = getSyllables(w);
+          resultsEl.insertAdjacentHTML('beforeend', renderCard(r));
+        } catch (e) {
+          resultsEl.insertAdjacentHTML('beforeend',
+            `<div class="card"><p class="empty">Error con "${w}": ${e.message}</p></div>`);
+        }
+      }
+
+      input.select();
+    };
+
+    const renderCard = (r) => {
+      const sylHtml = r.syllables.map((s, i) => {
+        const isTonic = i + 1 === r.tonicSyllable;
+        return `${i > 0 ? '<span class="separator">-</span>' : ''}<span class="syl${isTonic ? ' tonic' : ''}">${s.syllable}</span>`;
+      }).join('');
+
+      let tagsHtml = '';
+
+      for (const h of r.hiatus) {
+        tagsHtml += `<span class="tag hiatus">Hiato ${h.type === 'simple' ? 'simple' : 'acentual'}: ${h.combination}</span>`;
+      }
+      for (const d of r.diphthongs) {
+        tagsHtml += `<span class="tag diphthong">Diptongo ${DIPHTHONG_LABELS[d.type]}: ${d.combination}</span>`;
+      }
+      for (const t of r.triphthongs) {
+        tagsHtml += `<span class="tag triphthong">Triptongo: ${t.combination}</span>`;
+      }
+
+      return `
+        <div class="card">
+          <div class="word-header">
+            ${r.word}
+            <span class="accent-tag">${ACCENT_LABELS[r.accentuation]}</span>
+          </div>
+          <div class="syllables">${sylHtml}</div>
+          <dl class="meta">
+            <dt>Sílabas</dt><dd>${r.syllableCount}</dd>
+            <dt>Tónica</dt><dd>#${r.tonicSyllable}</dd>
+            <dt>Longitud</dt><dd>${r.wordLength}</dd>
+            <dt>Letra tildada</dt><dd>${r.accentedLetterIndex >= 0 ? `pos ${r.accentedLetterIndex}` : '—'}</dd>
+          </dl>
+          ${tagsHtml ? `<div class="tags">${tagsHtml}</div>` : ''}
+        </div>`;
+    };
+
+    btn.addEventListener('click', analyze);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') analyze(); });
+
+    // Analyze some examples on load
+    input.value = 'murciélago, casa, oído, buey, teléfono';
+    analyze();
+  </script>
+
+</body>
+</html>
