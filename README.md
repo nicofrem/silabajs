@@ -1,93 +1,137 @@
 # SilabaJS
-_____________
-Librería en Javascript para obtener en formato JSON las silabas, posición de la silaba tónica, tipo acentuación, hiato, diptongo y triptongo de una palabra.
 
-Estructura JSON:
+Librería para el análisis silábico de palabras en español. Separa cualquier palabra en sílabas e identifica acentuación, hiatos, diptongos y triptongos.
 
-```javascript
-    {
-        palabra,         // (String) Palabra ingresada
-        longitudPalabra, // (int)    Longitud de la palabra
-        numeroSilaba,    // (int)    Número de silabas de la palabra
-        silabas,         // (Array)  Array de objeto que contiene la silaba (caracter) y la posicion en la palabra
-        tonica,          // (int)    Posición de la silaba tónica (empieza en 1)
-        letraTildada,    // (int)    Posición de la letra tildada (si la hay)
-        acentuacion,     // (int)    Tipo acentuacion de la palabra (Aguda, Grave, Esdrujula y Sobresdrujula)
-        hiato,           // (Array)  Array de objeto que contiene hiato (si la hay)
-        diptongo,        // (Array)  Array de objeto que contiene diptongo (si la hay)
-        triptongo        // (Array)  Array de objeto que contiene triptongo (si la hay)
-    }
+**Zero dependencies** · ESM + CJS · Tipado completo en TypeScript
+
+## Instalación
+
+```bash
+npm install silabajs
 ```
 
-Ejemplo de salida con la palabra **Leer**:
-
-```javascript
-{
-  "palabra": "leer",
-  "longitudPalabra": 4,
-  "numeroSilaba": 2,
-  "silabas": [
-    {
-      "inicioPosicion": 0,
-      "silaba": "le"
-    },
-    {
-      "inicioPosicion": 2,
-      "silaba": "er"
-    }
-  ],
-  "tonica": 2,
-  "letraTildada": -1,
-  "acentuacion": "Aguda",
-  "hiato": [
-    {
-      "tipoHiato": "Hiato simple",
-      "silabaHiato": "e-e"
-    }
-  ],
-  "diptongo": [],
-  "triptongo": []
-}
+```bash
+pnpm add silabajs
 ```
 
-______________
-
-Como implementar:
-
-* Incluimos la libreria:
-```html
-<script src="silabajs.js"></script>
+```bash
+yarn add silabajs
 ```
 
-* Asignamos el resultado de la palabra que le pasamos entre paréntesis:
-```javascript
-    var silaba = silabaJS.getSilabas('leer');
+## Uso rápido
+
+```typescript
+import { getSyllables } from "silabajs";
+
+const resultado = getSyllables("murciélago");
+// → { syllables: ['mur', 'cié', 'la', 'go'], accentuation: 'proparoxytone', ... }
 ```
 
-* Ahora la variable *silaba* contiene el JSON con el resultado.
+## Ejemplo completo
 
-_________________
- [Silabeador](http://tip.iatext.ulpgc.es/silabas/) (Código base en C++ de donde se realizo la migración)
- 
-_________________
-MIT License
+```typescript
+import { getSyllables, ACCENT_LABELS, DIPHTHONG_LABELS } from "silabajs";
 
-Copyright (c) 2018 Nicolás Cofré Méndez.
+const r = getSyllables("murciélago");
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+console.log(r.word); // "murciélago"
+console.log(r.syllableCount); // 4
+console.log(r.syllables);
+// [
+//   { syllable: "mur", startIndex: 0 },
+//   { syllable: "cié", startIndex: 3 },
+//   { syllable: "la",  startIndex: 6 },
+//   { syllable: "go",  startIndex: 8 }
+// ]
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+console.log(r.accentuation); // "proparoxytone"
+console.log(ACCENT_LABELS[r.accentuation]); // "Esdrújula"
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+console.log(r.tonicSyllable); // 2  (1-indexed desde la última)
+console.log(r.accentedLetterIndex); // 4  (índice de 'é' en la palabra)
+
+console.log(r.diphthongs);
+// [{ type: "rising", combination: "ie" }]
+
+console.log(r.hiatus); // []
+console.log(r.triphthongs); // []
+```
+
+## API
+
+### `getSyllables(word: string): SyllableResult`
+
+Recibe una palabra en español y retorna su análisis silábico completo.
+
+La entrada se normaliza automáticamente a minúsculas y sin espacios laterales.
+
+### `SyllableResult`
+
+| Propiedad             | Tipo               | Descripción                                              |
+| --------------------- | ------------------ | -------------------------------------------------------- |
+| `word`                | `string`           | Palabra normalizada (minúsculas, sin espacios)           |
+| `wordLength`          | `number`           | Cantidad de caracteres                                   |
+| `syllableCount`       | `number`           | Cantidad de sílabas                                      |
+| `syllables`           | `SyllableInfo[]`   | Cada sílaba con su índice de inicio en la palabra        |
+| `tonicSyllable`       | `number`           | Posición de la sílaba tónica (1-indexed desde la última) |
+| `accentedLetterIndex` | `number`           | Índice de la letra acentuada (-1 si no tiene tilde)      |
+| `accentuation`        | `AccentuationType` | Tipo de acentuación                                      |
+| `hiatus`              | `HiatusInfo[]`     | Hiatos detectados                                        |
+| `diphthongs`          | `DiphthongInfo[]`  | Diptongos detectados                                     |
+| `triphthongs`         | `TriphthongInfo[]` | Triptongos detectados                                    |
+
+### Tipos de acentuación — `AccentuationType`
+
+| Valor                | Español       | Ejemplo              |
+| -------------------- | ------------- | -------------------- |
+| `oxytone`            | Aguda         | café, reloj          |
+| `paroxytone`         | Grave (Llana) | casa, lápiz          |
+| `proparoxytone`      | Esdrújula     | murciélago, teléfono |
+| `superproparoxytone` | Sobresdrújula | dígamelo             |
+
+### Tipos de diptongo — `DiphthongType`
+
+| Valor         | Español     | Ejemplo             |
+| ------------- | ----------- | ------------------- |
+| `rising`      | Creciente   | _ie_ en c**ie**lo   |
+| `falling`     | Decreciente | _ai_ en b**ai**le   |
+| `homogeneous` | Homogéneo   | _ui_ en c**ui**dado |
+
+### Tipos de hiato — `HiatusType`
+
+| Valor       | Español  | Ejemplo                |
+| ----------- | -------- | ---------------------- |
+| `simple`    | Simple   | _ae_ en a**e**ropuerto |
+| `accentual` | Acentual | _ía_ en d**ía**        |
+
+### Labels en español
+
+La librería exporta mapas para convertir los valores en inglés a sus nombres en español:
+
+```typescript
+import { ACCENT_LABELS, DIPHTHONG_LABELS, HIATUS_LABELS } from "silabajs";
+
+ACCENT_LABELS.oxytone; // "Aguda"
+ACCENT_LABELS.proparoxytone; // "Esdrújula"
+DIPHTHONG_LABELS.rising; // "Creciente"
+HIATUS_LABELS.accentual; // "Acentual"
+```
+
+### Tipos exportados
+
+```typescript
+import type {
+  SyllableResult,
+  SyllableInfo,
+  AccentuationType,
+  HiatusInfo,
+  HiatusType,
+  DiphthongInfo,
+  DiphthongType,
+  TriphthongInfo,
+} from "silabajs";
+```
+
+## Licencia
+
+MIT — Nicolás Cofré Méndez

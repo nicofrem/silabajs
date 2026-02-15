@@ -1,0 +1,50 @@
+{
+  "name": "silabajs",
+  "version": "2.0.0",
+  "description": "Spanish syllable splitter — get syllables, accentuation, hiatus, diphthongs and triphthongs from any Spanish word",
+  "author": "Nicolás Cofré Méndez",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "dev": "tsup && open http://localhost:3000/index.html && serve .",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "serve": "14.2.5",
+    "tsup": "8.5.1",
+    "typescript": "5.9.3",
+    "vitest": "4.0.18"
+  },
+  "keywords": [
+    "spanish",
+    "syllable",
+    "silaba",
+    "accentuation",
+    "hiatus",
+    "diphthong",
+    "triphthong",
+    "nlp"
+  ]
+}
