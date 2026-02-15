@@ -1,82 +1,137 @@
 # SilabaJS
 
-Spanish syllable analysis library — splits any Spanish word into syllables and provides accentuation type, hiatus, diphthongs and triphthongs.
+Librería para el análisis silábico de palabras en español. Separa cualquier palabra en sílabas e identifica acentuación, hiatos, diptongos y triptongos.
 
-## Install
+**Zero dependencies** · ESM + CJS · Tipado completo en TypeScript
+
+## Instalación
 
 ```bash
 npm install silabajs
 ```
 
-## Usage
-
-```typescript
-import { getSyllables } from 'silabajs';
-
-const result = getSyllables('murciélago');
+```bash
+pnpm add silabajs
 ```
 
-### Output
+```bash
+yarn add silabajs
+```
 
-```json
-{
-  "word": "murciélago",
-  "wordLength": 10,
-  "syllableCount": 4,
-  "syllables": [
-    { "syllable": "mur", "startIndex": 0 },
-    { "syllable": "cié", "startIndex": 3 },
-    { "syllable": "la", "startIndex": 6 },
-    { "syllable": "go", "startIndex": 8 }
-  ],
-  "tonicSyllable": 2,
-  "accentedLetterIndex": 4,
-  "accentuation": "proparoxytone",
-  "hiatus": [],
-  "diphthongs": [
-    { "type": "rising", "combination": "ie" }
-  ],
-  "triphthongs": []
-}
+## Uso rápido
+
+```typescript
+import { getSyllables } from "silabajs";
+
+const resultado = getSyllables("murciélago");
+// → { syllables: ['mur', 'cié', 'la', 'go'], accentuation: 'proparoxytone', ... }
+```
+
+## Ejemplo completo
+
+```typescript
+import { getSyllables, ACCENT_LABELS, DIPHTHONG_LABELS } from "silabajs";
+
+const r = getSyllables("murciélago");
+
+console.log(r.word); // "murciélago"
+console.log(r.syllableCount); // 4
+console.log(r.syllables);
+// [
+//   { syllable: "mur", startIndex: 0 },
+//   { syllable: "cié", startIndex: 3 },
+//   { syllable: "la",  startIndex: 6 },
+//   { syllable: "go",  startIndex: 8 }
+// ]
+
+console.log(r.accentuation); // "proparoxytone"
+console.log(ACCENT_LABELS[r.accentuation]); // "Esdrújula"
+
+console.log(r.tonicSyllable); // 2  (1-indexed desde la última)
+console.log(r.accentedLetterIndex); // 4  (índice de 'é' en la palabra)
+
+console.log(r.diphthongs);
+// [{ type: "rising", combination: "ie" }]
+
+console.log(r.hiatus); // []
+console.log(r.triphthongs); // []
 ```
 
 ## API
 
 ### `getSyllables(word: string): SyllableResult`
 
-Returns a `SyllableResult` object with:
+Recibe una palabra en español y retorna su análisis silábico completo.
 
-| Property | Type | Description |
-|---|---|---|
-| `word` | `string` | Lowercased, trimmed input |
-| `wordLength` | `number` | Character count |
-| `syllableCount` | `number` | Number of syllables |
-| `syllables` | `SyllableInfo[]` | Each syllable with its start index |
-| `tonicSyllable` | `number` | Position of stressed syllable (1-indexed) |
-| `accentedLetterIndex` | `number` | Index of accented letter (-1 if none) |
-| `accentuation` | `AccentuationType` | `'oxytone'` \| `'paroxytone'` \| `'proparoxytone'` \| `'superproparoxytone'` |
-| `hiatus` | `HiatusInfo[]` | Detected hiatus (simple or accentual) |
-| `diphthongs` | `DiphthongInfo[]` | Detected diphthongs (rising, falling, homogeneous) |
-| `triphthongs` | `TriphthongInfo[]` | Detected triphthongs |
+La entrada se normaliza automáticamente a minúsculas y sin espacios laterales.
 
-### Accentuation types
+### `SyllableResult`
 
-| Type | Spanish | Example |
-|---|---|---|
-| `oxytone` | Aguda | café, reloj |
-| `paroxytone` | Grave (Llana) | casa, lápiz |
-| `proparoxytone` | Esdrújula | murciélago, teléfono |
-| `superproparoxytone` | Sobresdrújula | dígamelo |
+| Propiedad             | Tipo               | Descripción                                              |
+| --------------------- | ------------------ | -------------------------------------------------------- |
+| `word`                | `string`           | Palabra normalizada (minúsculas, sin espacios)           |
+| `wordLength`          | `number`           | Cantidad de caracteres                                   |
+| `syllableCount`       | `number`           | Cantidad de sílabas                                      |
+| `syllables`           | `SyllableInfo[]`   | Cada sílaba con su índice de inicio en la palabra        |
+| `tonicSyllable`       | `number`           | Posición de la sílaba tónica (1-indexed desde la última) |
+| `accentedLetterIndex` | `number`           | Índice de la letra acentuada (-1 si no tiene tilde)      |
+| `accentuation`        | `AccentuationType` | Tipo de acentuación                                      |
+| `hiatus`              | `HiatusInfo[]`     | Hiatos detectados                                        |
+| `diphthongs`          | `DiphthongInfo[]`  | Diptongos detectados                                     |
+| `triphthongs`         | `TriphthongInfo[]` | Triptongos detectados                                    |
 
-## Development
+### Tipos de acentuación — `AccentuationType`
 
-```bash
-npm install
-npm test          # run tests
-npm run build     # build ESM + CJS + types
-npm run lint      # type-check
+| Valor                | Español       | Ejemplo              |
+| -------------------- | ------------- | -------------------- |
+| `oxytone`            | Aguda         | café, reloj          |
+| `paroxytone`         | Grave (Llana) | casa, lápiz          |
+| `proparoxytone`      | Esdrújula     | murciélago, teléfono |
+| `superproparoxytone` | Sobresdrújula | dígamelo             |
+
+### Tipos de diptongo — `DiphthongType`
+
+| Valor         | Español     | Ejemplo             |
+| ------------- | ----------- | ------------------- |
+| `rising`      | Creciente   | _ie_ en c**ie**lo   |
+| `falling`     | Decreciente | _ai_ en b**ai**le   |
+| `homogeneous` | Homogéneo   | _ui_ en c**ui**dado |
+
+### Tipos de hiato — `HiatusType`
+
+| Valor       | Español  | Ejemplo                |
+| ----------- | -------- | ---------------------- |
+| `simple`    | Simple   | _ae_ en a**e**ropuerto |
+| `accentual` | Acentual | _ía_ en d**ía**        |
+
+### Labels en español
+
+La librería exporta mapas para convertir los valores en inglés a sus nombres en español:
+
+```typescript
+import { ACCENT_LABELS, DIPHTHONG_LABELS, HIATUS_LABELS } from "silabajs";
+
+ACCENT_LABELS.oxytone; // "Aguda"
+ACCENT_LABELS.proparoxytone; // "Esdrújula"
+DIPHTHONG_LABELS.rising; // "Creciente"
+HIATUS_LABELS.accentual; // "Acentual"
 ```
 
-## License
+### Tipos exportados
+
+```typescript
+import type {
+  SyllableResult,
+  SyllableInfo,
+  AccentuationType,
+  HiatusInfo,
+  HiatusType,
+  DiphthongInfo,
+  DiphthongType,
+  TriphthongInfo,
+} from "silabajs";
+```
+
+## Licencia
 
 MIT — Nicolás Cofré Méndez
