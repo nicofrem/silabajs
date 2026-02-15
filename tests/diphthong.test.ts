@@ -23,6 +23,15 @@ describe('diphthong detection', () => {
     });
   });
 
+  it('detects rising diphthong with accented strong vowel (ié)', () => {
+    const result = getSyllables('murciélago');
+    expect(result.diphthongs).toContainEqual({
+      type: 'rising',
+      combination: 'ié',
+    });
+    expect(result.syllables.map(s => s.syllable)).toEqual(['mur', 'cié', 'la', 'go']);
+  });
+
   it('returns empty when no diphthong', () => {
     const result = getSyllables('sol');
     expect(result.diphthongs).toEqual([]);

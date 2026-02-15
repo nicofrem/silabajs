@@ -9,6 +9,8 @@ export type {
   TriphthongInfo,
 } from './types.js';
 
+export { ACCENT_LABELS, DIPHTHONG_LABELS, HIATUS_LABELS } from './constants.js';
+
 import type { SyllableResult } from './types.js';
 import { syllabify } from './core/syllabify.js';
 import { getAccentuationType } from './core/accentuation.js';

@@ -48,10 +48,32 @@ export const ONSET_DIGRAPHS = new Set([
   'pt', 'ct', 'cn', 'ps', 'mn', 'gn', 'ft', 'pn', 'cz', 'tz', 'ts',
 ]);
 
+// --- Spanish labels ---
+
+import type { AccentuationType, DiphthongType, HiatusType } from './types.js';
+
+export const ACCENT_LABELS: Record<AccentuationType, string> = {
+  oxytone: 'Aguda',
+  paroxytone: 'Grave',
+  proparoxytone: 'Esdrújula',
+  superproparoxytone: 'Sobresdrújula',
+};
+
+export const DIPHTHONG_LABELS: Record<DiphthongType, string> = {
+  rising: 'Creciente',
+  falling: 'Decreciente',
+  homogeneous: 'Homogéneo',
+};
+
+export const HIATUS_LABELS: Record<HiatusType, string> = {
+  simple: 'Simple',
+  accentual: 'Acentual',
+};
+
 // --- Regex patterns for diphthong / triphthong detection ---
 
 // Note: 'y' is included as weak-vowel equivalent in final position
-export const TRIPHTHONG_RE = /([iu][aeo][iuy])/g;
-export const RISING_DIPHTHONG_RE = /([iu][aeo])/g;
-export const FALLING_DIPHTHONG_RE = /([aeo][iuy])/g;
+export const TRIPHTHONG_RE = /([iu][aeoáéóàèò][iuy])/g;
+export const RISING_DIPHTHONG_RE = /([iu][aeoáéóàèò])/g;
+export const FALLING_DIPHTHONG_RE = /([aeoáéóàèò][iuy])/g;
 export const HOMOGENEOUS_DIPHTHONG_RE = /([iu][iu])/g;
