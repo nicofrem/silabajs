@@ -32,6 +32,15 @@ describe('diphthong detection', () => {
     expect(result.syllables.map(s => s.syllable)).toEqual(['mur', 'cié', 'la', 'go']);
   });
 
+  it('detects homogeneous diphthong with final y (uy in "muy")', () => {
+    const result = getSyllables('muy');
+    expect(result.diphthongs).toContainEqual({
+      type: 'homogeneous',
+      combination: 'uy',
+    });
+    expect(result.syllables.map(s => s.syllable)).toEqual(['muy']);
+  });
+
   it('returns empty when no diphthong', () => {
     const result = getSyllables('sol');
     expect(result.diphthongs).toEqual([]);

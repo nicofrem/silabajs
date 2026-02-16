@@ -76,4 +76,4 @@ export const HIATUS_LABELS: Record<HiatusType, string> = {
 export const TRIPHTHONG_RE = /([iu][aeoáéóàèò][iuy])/g;
 export const RISING_DIPHTHONG_RE = /([iu][aeoáéóàèò])/g;
 export const FALLING_DIPHTHONG_RE = /([aeoáéóàèò][iuy])/g;
-export const HOMOGENEOUS_DIPHTHONG_RE = /([iu][iu])/g;
+export const HOMOGENEOUS_DIPHTHONG_RE = /([iu][iuy])/g;
